@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:12
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-sql
+data:
+  1-test.sql: |
+    CREATE TABLE IF NOT EXISTS test
+    (
+        test_id       uuid        primary key ,
+        created       timestamptz NOT NULL,
+        updated       timestamptz default CURRENT_TIMESTAMP
+    );
+
+  2-test.sql: |
+    ALTER TABLE test ADD COLUMN IF NOT EXISTS new_column INTEGER;
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flow-k8-sql
+  labels:
+    app: flow-k8-sql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flow-k8-sql
+  template:
+    metadata:
+      labels:
+        app: flow-k8-sql
+    spec:
+      volumes:
+        - name: db-sql-volume
+          configMap:
+            name: db-sql
+      initContainers:
+        - name: flow-k8-sql
+          image: flowlab/flow-k8-sql:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: db-sql-volume
+              mountPath: /db
+          env:
+            - name: DB_DISABLE_TLS
+              value: "true"
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_HOST
+              value: postgres
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
