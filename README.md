@@ -1,7 +1,5 @@
 # Flow k8 sql ![Build and Publish](https://github.com/flow-lab/flow-k8-sql/workflows/Build%20and%20Publish/badge.svg?branch=master)
 
-This project was created by cookiecutter https://github.com/flow-lab/ms-template.
-
 It is a helper container for running SQL migration scripts with _PostgreSQL_ on _Kubernetes_. It should be used as 
 [InitContainer](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) in deployment definition.
 
@@ -71,3 +69,7 @@ where:
 
 You can test it locally with [Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/). Start minikube
  and apply `kubectl apply -f minikube.yml`.
+ 
+## Credits
+
+- This project was created by cookiecutter https://github.com/flow-lab/ms-template
