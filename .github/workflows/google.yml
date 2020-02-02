@@ -49,13 +49,15 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |
+        VERSION=${{ steps.version.outputs.VERSION }}
+        DOCKER_VER=${VERSION#"v"}
         docker build \
           -t $GCR/"$GKE_PROJECT"/"$IMAGE":latest \
-          -t $GCR/"$GKE_PROJECT"/"$IMAGE":${{ steps.version.outputs.VERSION }} \
+          -t $GCR/"$GKE_PROJECT"/"$IMAGE":$DOCKER_VER \
           -t flowlab/"$IMAGE":latest \
-          -t flowlab/"$IMAGE":"${{ steps.version.outputs.VERSION }}" \
+          -t flowlab/"$IMAGE":"$DOCKER_VER" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg VERSION=${{ steps.version.outputs.VERSION }} .
+          --build-arg VERSION=$VERSION .
 
     # Push the Docker image to Google Container Registry
     - name: Publish GCR
