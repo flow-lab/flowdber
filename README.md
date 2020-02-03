@@ -33,6 +33,11 @@ Check Makefile for all important stuff.
 - [golang](https://golang.org/doc/install) installation
 - gui editor, eg [goland](https://www.jetbrains.com/go)
 
+
+## DockerHub
+
+[https://hub.docker.com/repository/docker/flowlab/flow-k8-sql](https://hub.docker.com/repository/docker/flowlab/flow-k8-sql)
+
 ### GitHub Actions
 
 Project is using GitHub Actions for deployment. Workflows are located in [./github/workflows](./github/workflows), where:
