@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"expvar"
-	"fmt"
+	"github.com/flow-lab/dlog"
 	"github.com/flow-lab/flow-k8-sql/internal/migration"
 	"github.com/flow-lab/flow-k8-sql/internal/platform"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -17,18 +17,24 @@ var (
 )
 
 func main() {
-	if err := run(); err != nil {
-		log.Printf("error : %s", err)
-		os.Exit(1)
-	}
-}
-
-func run() error {
 	expvar.NewString("version").Set(version)
 	expvar.NewString("commit").Set(commit)
 	expvar.NewString("date").Set(date)
-	log := log.New(os.Stdout, fmt.Sprintf("flow-k8-sql : (%s, %s) : ", version, short(commit)), log.LstdFlags|log.Lmicroseconds|log.Lshortfile|log.Ldate)
 
+	logger := dlog.NewLogger(&dlog.Config{
+		AppName:      "flow-k8-sql",
+		Level:        "debug",
+		Version:      version,
+		Commit:       short(commit),
+		Build:        date,
+		ReportCaller: true,
+	})
+	if err := run(logger); err != nil {
+		logger.Fatalf("error: %v", err)
+	}
+}
+
+func run(logger *log.Entry) error {
 	serverName := os.Getenv("DB_SERVER_NAME")
 	user := os.Getenv("DB_USERNAME")
 	pass := os.Getenv("DB_PASSWORD")
@@ -77,9 +83,9 @@ func run() error {
 	if path == "" {
 		path = "/db"
 	}
-	err = migration.Migrate(context.Background(), db, path, log)
+	err = migration.Migrate(context.Background(), db, path, logger)
 	if err != nil {
-		log.Printf("error migrate: %v", err)
+		logger.Printf("error migrate: %v", err)
 	}
 	return err
 }

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-pg/pg"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"regexp"
@@ -22,7 +22,7 @@ const (
 
 // Migrate executes all migration scripts found in the scriptsPath. In case any of scripts fails migration is stopped
 // and error message will be returned.
-func Migrate(ctx context.Context, db *pg.DB, scriptsPath string, log *log.Logger) error {
+func Migrate(ctx context.Context, db *pg.DB, scriptsPath string, logger *logrus.Entry) error {
 	f, err := ioutil.ReadDir(scriptsPath)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func Migrate(ctx context.Context, db *pg.DB, scriptsPath string, log *log.Logger
 	for i := range keys {
 		fileInfo := m[keys[i]]
 		name := path.Join(scriptsPath, fileInfo.Name())
-		log.Printf("execute script: %v\n", name)
+		logger.Infof("execute script: %v", name)
 		b, err := ioutil.ReadFile(name)
 		if err != nil {
 			return err
@@ -66,7 +66,7 @@ func Migrate(ctx context.Context, db *pg.DB, scriptsPath string, log *log.Logger
 		if _, err := db.ExecContext(ctx, string(b)); err != nil {
 			return err
 		}
-		log.Printf("executed: %v\n", name)
+		logger.Infof("executed: %v", name)
 	}
 
 	return nil

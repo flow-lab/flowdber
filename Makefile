@@ -6,7 +6,7 @@ HOSTNAME := eu.gcr.io
 DOCKER_IMG := flowlab/${SRV_NAME}
 
 deps:
-	go mod download
+	go get -u -t ./...
 
 deps-reset:
 	git checkout -- go.mod
