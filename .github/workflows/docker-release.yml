@@ -11,7 +11,7 @@ env:
   GITHUB_SHA: ${{ github.sha }}
   GCP_REGION: europe-west4
   GKE_CLUSTER: gke-0
-  IMAGE: flow-k8-sql
+  IMAGE: flowdber
   GCR: eu.gcr.io
 
 jobs:
@@ -34,17 +34,18 @@ jobs:
         echo ::set-output name=VERSION::${VERSION}
 
     # Setup gcloud CLI
-    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-      with:
-        version: '270.0.0'
-        service_account_email: ${{ secrets.GKE_EMAIL }}
-        service_account_key: ${{ secrets.GKE_KEY }}
+    # FIXME [grokrz]: this is not working
+#    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+#      with:
+#        version: '270.0.0'
+#        service_account_email: ${{ secrets.GKE_EMAIL }}
+#        service_account_key: ${{ secrets.GKE_KEY }}
 
-    # Configure docker to use the gcloud command-line tool as a credential helper
-    - run: |
-        # Set up docker to authenticate
-        # via gcloud command-line tool.
-        gcloud auth configure-docker
+#    # Configure docker to use the gcloud command-line tool as a credential helper
+#    - run: |
+#        # Set up docker to authenticate
+#        # via gcloud command-line tool.
+#        gcloud auth configure-docker
 
     # Build the Docker image
     - name: Build
@@ -60,9 +61,9 @@ jobs:
           --build-arg VERSION=$VERSION .
 
     # Push the Docker image to Google Container Registry
-    - name: Publish GCR
-      run: |
-        docker push $GCR/"$GKE_PROJECT"/"$IMAGE"
+#    - name: Publish GCR
+#      run: |
+#        docker push $GCR/"$GKE_PROJECT"/"$IMAGE"
 
     - name: Setup DockerHub
       run: |

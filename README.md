@@ -37,7 +37,7 @@ Check Makefile for all important stuff.
 
 ## DockerHub
 
-[https://hub.docker.com/repository/docker/flowlab/flow-k8-sql](https://hub.docker.com/repository/docker/flowlab/flow-k8-sql)
+[https://hub.docker.com/repository/docker/flowlab/flowdber](https://hub.docker.com/repository/docker/flowlab/flowdber)
 
 ### GitHub Actions
 
@@ -48,7 +48,7 @@ where:
 
 ### Secrets
 
-Projects requires secrets for GitHub Actions. Secrets should be located in GitHub project secrets.
+Project requires secrets for GitHub Actions. Secrets should be located in GitHub project secrets.
 
 - GKE_PROJECT - Google Cloud project that cluster is located
 - GKE_EMAIL - cluster email

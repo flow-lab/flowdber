@@ -57,26 +57,26 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flow-k8-sql
+  name: flowdber
   labels:
-    app: flow-k8-sql
+    app: flowdber
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flow-k8-sql
+      app: flowdber
   template:
     metadata:
       labels:
-        app: flow-k8-sql
+        app: flowdber
     spec:
       volumes:
         - name: db-sql-volume
           configMap:
             name: db-sql
       initContainers:
-        - name: flow-k8-sql
-          image: flowlab/flow-k8-sql:latest
+        - name: flowdber
+          image: flowlab/flowdber:latest
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: db-sql-volume
