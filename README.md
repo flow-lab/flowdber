@@ -1,7 +1,8 @@
-# Flow k8 sql ![Build and Publish](https://github.com/flow-lab/flow-k8-sql/workflows/Build%20and%20Publish/badge.svg?branch=master)
+# FlowDBer ![Build and Publish](https://github.com/flow-lab/flowdber/workflows/Build%20and%20Publish/badge.svg?branch=master)
 
-It is a helper container for running SQL migration scripts with _PostgreSQL_ on _Kubernetes_. It should be used as 
-[InitContainer](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) in deployment definition.
+FlowDBer project includes a helper container that makes it easy to run SQL migration scripts using PostgreSQL on
+Kubernetes. To use it, simply include it as an InitContainer in your deployment definition, following the instructions
+in the Kubernetes documentation.
 
 Check [minikube.yml](./minikube.yml) for example configuration.
 
@@ -16,9 +17,10 @@ Check [minikube.yml](./minikube.yml) for example configuration.
 ### Requirements
 
 - file name should be **UNIXTIME**-**WHAT**.sql, eg: 1580247785-user-table.sql or just **INDEX**-**WHAT**.sql, eg:
-  0-new-user-db.sql, 1-birthdate-column-in-user.sql etc  
+  0-new-user-db.sql, 1-birthdate-column-in-user.sql etc
 - sql scripts must be idempotent
-- set up all required env variables for db connection and db scripts, check [cmd/main.go](./cmd/main.go) for more details
+- set up all required env variables for db connection and db scripts, check [cmd/main.go](./cmd/main.go) for more
+  details
 
 Check Makefile for all important stuff.
 
@@ -33,14 +35,14 @@ Check Makefile for all important stuff.
 - [golang](https://golang.org/doc/install) installation
 - gui editor, eg [goland](https://www.jetbrains.com/go)
 
-
 ## DockerHub
 
 [https://hub.docker.com/repository/docker/flowlab/flow-k8-sql](https://hub.docker.com/repository/docker/flowlab/flow-k8-sql)
 
 ### GitHub Actions
 
-Project is using GitHub Actions for deployment. Workflows are located in [./github/workflows](./github/workflows), where:
+Project is using GitHub Actions for deployment. Workflows are located in [./github/workflows](./github/workflows),
+where:
 
 - google.yml - tests, builds and deploys to docker GCR and DockerHub repositories
 
@@ -56,7 +58,7 @@ Projects requires secrets for GitHub Actions. Secrets should be located in GitHu
 ## Logging
 
 Project is using standard logger from `log` library. It is configured in `main.go` and should be used in all logging
-statements. Log is in format like: 
+statements. Log is in format like:
 
 **NAME** : (**VERSION**, **SHA**) : **DATE-TIME** **FILE**: **MSG**
 
@@ -69,12 +71,11 @@ where:
 - **FILE**: source file name and line information
 - **MSG**: log message
 
-
 ## Running locally
 
 You can test it locally with [Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/). Start minikube
- and apply `kubectl apply -f minikube.yml`.
- 
+and apply `kubectl apply -f minikube.yml`.
+
 ## Credits
 
 - This project was created by cookiecutter https://github.com/flow-lab/ms-template

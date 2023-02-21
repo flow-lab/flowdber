@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-SRV_NAME := flow-k8-sql
+SRV_NAME := flowdber
 PROJECT := diatom-ai
 HOSTNAME := eu.gcr.io
 DOCKER_IMG := flowlab/${SRV_NAME}

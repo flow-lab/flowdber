@@ -4,8 +4,8 @@ import (
 	"context"
 	"expvar"
 	"github.com/flow-lab/dlog"
-	"github.com/flow-lab/flow-k8-sql/internal/migration"
-	"github.com/flow-lab/flow-k8-sql/internal/platform"
+	"github.com/flow-lab/flowdber/internal/migration"
+	"github.com/flow-lab/flowdber/internal/platform"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
