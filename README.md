@@ -32,16 +32,6 @@ Check [minikube.yml](./minikube.yml) for example configuration.
 
 [https://hub.docker.com/repository/docker/flowlab/flowdber](https://hub.docker.com/repository/docker/flowlab/flowdber)
 
-### GitHub Actions
-
-Project is using GitHub Actions for deployment. Workflows are located in [./github/workflows](./github/workflows).
-
-#### Secrets
-
-Project requires secrets for GitHub Actions. Secrets should be located in GitHub project secrets.
-
-- DOCKERHUB_TOKEN - DockerHub access token for pushing images
-
 ## Logging
 
 App is using [dlog](https://github.com/flow-lab/dlog) for logging. It is configured to log to stdout and stderr.
