@@ -27,8 +27,6 @@ jobs:
       run: |
         VERSION=${{github.ref_name}}
         docker build \
-          -t $GCR/"$GKE_PROJECT"/"$IMAGE":latest \
-          -t $GCR/"$GKE_PROJECT"/"$IMAGE":${VERSION} \
           -t flowlab/"$IMAGE":latest \
           -t flowlab/"$IMAGE":"${VERSION}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
