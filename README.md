@@ -30,7 +30,7 @@ Check [minikube.yml](./minikube.yml) for example configuration.
 
 ## DockerHub
 
-[https://hub.docker.com/repository/docker/flowlab/flowdber](https://hub.docker.com/repository/docker/flowlab/flowdber)
+[https://hub.docker.com/r/flowlab/flowdber](https://hub.docker.com/r/flowlab/flowdber)
 
 ## Logging
 
