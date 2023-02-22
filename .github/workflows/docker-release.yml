@@ -1,4 +1,4 @@
-name: Build and Publish on Release Tag
+name: Build and Push [DockerHub]
 
 on:
   push:
@@ -38,6 +38,4 @@ jobs:
 
     - name: Publish all tags to DockerHub
       run: |
-        VERSION=${{github.ref_name}}
-        docker push flowlab/"$IMAGE":latest
-        docker push flowlab/"$IMAGE":"${VERSION}"
+        docker push -a flowlab/"$IMAGE"
