@@ -1,4 +1,4 @@
-# FlowDBer ![Build and Publish](https://github.com/flow-lab/flowdber/workflows/Build%20and%20Publish/badge.svg?branch=master)
+# FlowDBer [![Build and Publish on Release Tag](https://github.com/flow-lab/flowdber/actions/workflows/docker-release.yml/badge.svg)](https://github.com/flow-lab/flowdber/actions/workflows/docker-release.yml)
 
 FlowDBer project includes a helper container that makes it easy to run SQL migration scripts using PostgreSQL on
 Kubernetes. To use it, simply include it as an InitContainer in your deployment definition, following the instructions
