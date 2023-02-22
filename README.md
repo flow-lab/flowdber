@@ -14,7 +14,7 @@ Check [minikube.yml](./minikube.yml) for example configuration.
 
 ## Project structure
 
-- [./cmd/](./cmd/) - app implementation
+- [./cmd](./cmd) - app implementation
 - [./internal](./internal) - internal packages that should not be shared with other projects
 - [./github](./.github) - GitHub Actions workflows
 - [./certs](./certs) - certificates for TLS when running locally with docker compose
