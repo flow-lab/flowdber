@@ -36,6 +36,8 @@ jobs:
       run: |
         docker login --username flowlab --password ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Publish DockerHub
+    - name: Publish all tags to DockerHub
       run: |
-        docker push flowlab/$IMAGE
+        VERSION=${{github.ref_name}}
+        docker push flowlab/"$IMAGE":latest
+        docker push flowlab/"$IMAGE":"${VERSION}"
