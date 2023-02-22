@@ -12,11 +12,14 @@ import (
 	"time"
 )
 
-// This program generates a self-signed root CA certificate and a client
-// certificate signed by the root CA. The client certificate is intended to be
-// used for authenticating to DB.
-
 func main() {
+	// TODO [grokrz]: refactor
+	validFor := 365 * 24 * time.Hour
+	generateDBCerts(validFor)
+	generateClientCerts(validFor)
+}
+
+func generateDBCerts(validFor time.Duration) {
 	// Generate a new RSA private key
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -30,7 +33,7 @@ func main() {
 			CommonName: "db",
 		},
 		NotBefore: time.Now(),
-		NotAfter:  time.Now().Add(365 * 24 * time.Hour),
+		NotAfter:  time.Now().Add(validFor),
 		KeyUsage:  x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 		ExtKeyUsage: []x509.ExtKeyUsage{
 			x509.ExtKeyUsageServerAuth,
@@ -53,7 +56,9 @@ func main() {
 		panic(err)
 	}
 	defer certOut.Close()
-	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	if err := pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
+		panic(err)
+	}
 
 	// Save the private key to a file
 	keyOut, err := os.Create("server.key")
@@ -61,10 +66,57 @@ func main() {
 		panic(err)
 	}
 	defer keyOut.Close()
-	pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)})
+	if err := pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)}); err != nil {
+		panic(err)
+	}
 
 	// chmod 600 server.key
 	if err := keyOut.Chmod(0600); err != nil {
+		panic(err)
+	}
+}
+
+func generateClientCerts(validFor time.Duration) {
+	// Generate a new RSA private key
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		panic(err)
+	}
+
+	// Encode the private key in PEM format and write to file
+	keyOut, err := os.Create("client-key.pem")
+	if err != nil {
+		panic(err)
+	}
+	defer keyOut.Close()
+	if err := pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)}); err != nil {
+		panic(err)
+	}
+
+	// Create a certificate template
+	template := x509.Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: "flowdber"},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(validFor),
+		KeyUsage:              x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
+		BasicConstraintsValid: true,
+	}
+
+	// Generate a new self-signed certificate
+	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &key.PublicKey, key)
+	if err != nil {
+		panic(err)
+	}
+
+	// Encode the certificate in PEM format and write to file
+	certOut, err := os.Create("client-cert.pem")
+	if err != nil {
+		panic(err)
+	}
+	defer certOut.Close()
+	if err := pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
 		panic(err)
 	}
 }

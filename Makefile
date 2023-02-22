@@ -32,13 +32,22 @@ docker-push:
 docker-clean:
 	docker system prune -f
 
+docker-compose-up:
+	docker compose up --force-recreate --build
+
 # minikube
-minikube-init:
-	eval $(minikube docker-env)
+minikube-start:
+	minikube start --cpus 4 --memory 4096 --disk-size 10g --kubernetes-version=v1.26.1
+
+minikube-stop:
+	minikube stop
+
+minikube-build:
+	eval $$(minikube docker-env) && make docker-build
 
 minikube-deploy:
 	kubectl apply -f minikube.yml
 
 minikube-get-pod:
-	kubectl get pod
+	kubectl get pod # or just use k9s FTW
 

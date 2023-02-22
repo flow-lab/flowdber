@@ -4,10 +4,11 @@ import (
 	"context"
 	"expvar"
 	"github.com/flow-lab/dlog"
+	"github.com/flow-lab/flowdber/internal/db"
 	"github.com/flow-lab/flowdber/internal/migration"
-	"github.com/flow-lab/flowdber/internal/platform"
+	"github.com/flow-lab/flowdber/internal/utils"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"os"
 )
 
 var (
@@ -22,10 +23,10 @@ func main() {
 	expvar.NewString("date").Set(date)
 
 	logger := dlog.NewLogger(&dlog.Config{
-		AppName:      "flow-k8-sql",
-		Level:        "debug",
+		AppName:      "flowdber",
+		Level:        utils.GetEnvOrDefault("LOG_LEVEL", "debug"),
 		Version:      version,
-		Commit:       short(commit),
+		Commit:       utils.Short(commit),
 		Build:        date,
 		ReportCaller: true,
 	})
@@ -35,64 +36,32 @@ func main() {
 }
 
 func run(logger *log.Entry) error {
-	serverName := os.Getenv("DB_SERVER_NAME")
-	user := os.Getenv("DB_USERNAME")
-	pass := os.Getenv("DB_PASSWORD")
-	host := os.Getenv("DB_HOST")
-	if host == "" {
-		host = "localhost"
-	}
-
-	serverCA := os.Getenv("DB_SERVER_CA")
-	clientCert := os.Getenv("DB_CLIENT_CERT")
-	clientKeyCert := os.Getenv("DB_CLIENT_KEY_CERT")
-
-	disableTLS := false
-	if os.Getenv("DB_DISABLE_TLS") == "true" {
-		disableTLS = true
-	}
-
-	c := platform.DBConfig{
-		ServerName:    serverName,
-		User:          user,
-		Password:      pass,
-		Host:          host,
-		DisableTLS:    disableTLS,
-		ServerCA:      serverCA,
-		ClientCert:    clientCert,
-		ClientKeyCert: clientKeyCert,
-	}
-
-	// db
-	log.Println("database : initializing")
-	db, err := platform.OpenDB(c)
+	logger.Info("connect to db")
+	dbConn, err := db.ConnectTCPSocket(logger)
 	if err != nil {
-		log.Printf("platform.OpenDB error: %v", err)
 		return err
 	}
 	defer func() {
-		err = db.Close()
-		if err != nil {
-			log.Printf("database : closed with %s", err)
-		} else {
-			log.Printf("database : closed")
+		if err := dbConn.Close(); err != nil {
+			logger.Warnf("db close error: %s", err)
+			return
 		}
+		logger.Infof("db connection closed")
 	}()
 
-	path := os.Getenv("DB_SQL_PATH")
-	if path == "" {
-		path = "/db"
+	// ping connection
+	if err := dbConn.Ping(); err != nil {
+		return errors.Wrap(err, "db ping failed")
 	}
-	err = migration.Migrate(context.Background(), db, path, logger)
-	if err != nil {
-		logger.Printf("error migrate: %v", err)
-	}
-	return err
-}
 
-func short(s string) string {
-	if len(s) > 7 {
-		return s[0:7]
+	if err := migration.Migrate(
+		context.Background(),
+		dbConn,
+		utils.GetEnvOrDefault("DB_SQL_PATH", "/db"),
+		logger,
+	); err != nil {
+		return errors.Wrap(err, "migration failed")
 	}
-	return s
+
+	return nil
 }

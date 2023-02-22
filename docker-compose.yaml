@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-bullseye
+    command: postgres -c ssl=on -c ssl_cert_file=/var/lib/postgresql/server-ca.pem -c ssl_key_file=/var/lib/postgresql/server.key
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-diatom-dev}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-diatom-dev}
+      POSTGRES_DB: ${DB_NAME:-diatom-dev}
+      PGDATA: ${PGDATA:-/var/lib/postgresql/data}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db-data:${PGDATA:-/var/lib/postgresql/data}
+      - ./certs/server-ca.pem:/var/lib/postgresql/server-ca.pem
+      - ./certs/server.key:/var/lib/postgresql/server.key
+
+  flowdber:
+    restart: "on-failure"
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - GIT_SHA=${GIT_SHA:-dev}
+        - VERSION=${VERSION:-dev}
+        - GOARCH=${GOARCH:-arm64}
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      DB_HOST: ${DB_HOST:-db}
+      DB_NAME: ${DB_NAME:-diatom-dev}
+      DB_USER: ${DB_USER:-diatom-dev}
+      DB_PASS: ${DB_PASS:-diatom-dev}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_CERT_PATH: ${DB_CERT_PATH:-/etc/client-cert}
+    volumes:
+      - ./db-sql:/db
+      - ./certs/server-ca.pem:/etc/client-cert/server-ca.pem
+      - ./certs/client-key.pem:/etc/client-cert/client-key.pem
+      - ./certs/client-cert.pem:/etc/client-cert/client-cert.pem

@@ -1,9 +1,9 @@
-name: Build and Publish
+name: Build and Publish on Release Tag
 
 on:
   push:
     tags:
-    - '*'
+    - '*.*.*'
 
 env:
   GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
@@ -21,49 +21,20 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v3
 
-    # Setup project version
-    - name: Get version
-      id: version
-      run: |
-        VERSION="dev"
-        if [[ "${GITHUB_REF/refs\/tags\//}" != "refs/heads/"* ]] ; then
-          VERSION="${GITHUB_REF/refs\/tags\//}"
-        fi
-        echo ::set-output name=VERSION::${VERSION}
-
-    # Setup gcloud CLI
-    # FIXME [grokrz]: this is not working
-#    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-#      with:
-#        version: '270.0.0'
-#        service_account_email: ${{ secrets.GKE_EMAIL }}
-#        service_account_key: ${{ secrets.GKE_KEY }}
-
-#    # Configure docker to use the gcloud command-line tool as a credential helper
-#    - run: |
-#        # Set up docker to authenticate
-#        # via gcloud command-line tool.
-#        gcloud auth configure-docker
-
-    # Build the Docker image
     - name: Build
       run: |
-        VERSION=${{ steps.version.outputs.VERSION }}
-        DOCKER_VER=${VERSION#"v"}
         docker build \
           -t $GCR/"$GKE_PROJECT"/"$IMAGE":latest \
-          -t $GCR/"$GKE_PROJECT"/"$IMAGE":$DOCKER_VER \
+          -t $GCR/"$GKE_PROJECT"/"$IMAGE":${VERSION} \
           -t flowlab/"$IMAGE":latest \
-          -t flowlab/"$IMAGE":"$DOCKER_VER" \
+          -t flowlab/"$IMAGE":"${VERSION}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg VERSION=$VERSION .
-
-    # Push the Docker image to Google Container Registry
-#    - name: Publish GCR
-#      run: |
-#        docker push $GCR/"$GKE_PROJECT"/"$IMAGE"
+          --build-arg VERSION=${VERSION} .
+      with:
+        name: ${{github.ref_name}}
+        path: VERSION
 
     - name: Setup DockerHub
       run: |

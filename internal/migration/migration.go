@@ -2,8 +2,8 @@ package migration
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
-	"github.com/go-pg/pg"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
@@ -16,16 +16,20 @@ import (
 )
 
 const (
-	timestampLayout = "2006-01-02T15:04Z"
-	fileNameRe      = `\d+-[-A-Za-z]+\.sql$`
+	fileNameRe = `\d+-[-A-Za-z]+\.sql$`
 )
 
 // Migrate executes all migration scripts found in the scriptsPath. In case any of scripts fails migration is stopped
 // and error message will be returned.
-func Migrate(ctx context.Context, db *pg.DB, scriptsPath string, logger *logrus.Entry) error {
+func Migrate(ctx context.Context, db *sql.DB, scriptsPath string, logger *logrus.Entry) error {
 	f, err := ioutil.ReadDir(scriptsPath)
 	if err != nil {
 		return err
+	}
+
+	if len(f) == 0 {
+		logger.Info("no migration scripts found")
+		return nil
 	}
 
 	timestampRe := regexp.MustCompile(`\d+`)
@@ -58,7 +62,7 @@ func Migrate(ctx context.Context, db *pg.DB, scriptsPath string, logger *logrus.
 		fileInfo := m[keys[i]]
 		name := path.Join(scriptsPath, fileInfo.Name())
 		logger.Infof("execute script: %v", name)
-		b, err := ioutil.ReadFile(name)
+		b, err := os.ReadFile(name)
 		if err != nil {
 			return err
 		}
@@ -78,6 +82,5 @@ func validate(fileName string, re *regexp.Regexp) error {
 	} else if !re.MatchString(fileName) {
 		return fmt.Errorf("file name [%s] does not match the pattern. Example file name is '1580247785-add-column.sql'", fileName)
 	}
-
 	return nil
 }

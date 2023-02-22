@@ -6,34 +6,27 @@ in the Kubernetes documentation.
 
 Check [minikube.yml](./minikube.yml) for example configuration.
 
-### Main functionality:
-
-- read all sql files in given directory and execute based on timestamp (from oldest to newest)
-- postgres db support with TLS
-- golang implementation with modules
-- kubernetes support
-- docker size ~9MB
-
 ### Requirements
 
 - file name should be **UNIXTIME**-**WHAT**.sql, eg: 1580247785-user-table.sql or just **INDEX**-**WHAT**.sql, eg:
   0-new-user-db.sql, 1-birthdate-column-in-user.sql etc
-- sql scripts must be idempotent
-- set up all required env variables for db connection and db scripts, check [cmd/main.go](./cmd/main.go) for more
-  details
-
-Check Makefile for all important stuff.
+- sql scripts must be idempotent, which means that they can be run multiple times without causing any problems :)
 
 ## Project structure
 
 - [./cmd/](./cmd/) - app implementation
 - [./internal](./internal) - internal packages that should not be shared with other projects
-- [./github](./.github/) - GitHub Actions workflows
+- [./github](./.github) - GitHub Actions workflows
+- [./certs](./certs) - certificates for TLS when running locally with docker compose
+- [./db-scripts](./db-scripts) - database scripts that will be executed on startup when using docker compose
+- [./docker-compose.yaml](./docker-compose.yaml) - docker compose file for running locally
+- [./Makefile](./Makefile) - makefile for running commands during development
+- [LICENSE](./LICENSE) - license file
 
 ## Requirements
 
 - [golang](https://golang.org/doc/install) installation
-- gui editor, eg [goland](https://www.jetbrains.com/go)
+- gui editor, e.g. [goland](https://www.jetbrains.com/go)
 
 ## DockerHub
 
@@ -41,35 +34,17 @@ Check Makefile for all important stuff.
 
 ### GitHub Actions
 
-Project is using GitHub Actions for deployment. Workflows are located in [./github/workflows](./github/workflows),
-where:
+Project is using GitHub Actions for deployment. Workflows are located in [./github/workflows](./github/workflows).
 
-- google.yml - tests, builds and deploys to docker GCR and DockerHub repositories
-
-### Secrets
+#### Secrets
 
 Project requires secrets for GitHub Actions. Secrets should be located in GitHub project secrets.
 
-- GKE_PROJECT - Google Cloud project that cluster is located
-- GKE_EMAIL - cluster email
-- GKE_KEY - base64 encoded service account key that has access to deploy to Docker registry
-- DOCKERHUB_TOKEN - DockerHub access token
+- DOCKERHUB_TOKEN - DockerHub access token for pushing images
 
 ## Logging
 
-Project is using standard logger from `log` library. It is configured in `main.go` and should be used in all logging
-statements. Log is in format like:
-
-**NAME** : (**VERSION**, **SHA**) : **DATE-TIME** **FILE**: **MSG**
-
-where:
-
-- **NAME**: microservice name
-- **VERSION**: [semver](https://semver.org/) version taken from annotated tag, `dev` otherwise
-- **SHA**: git SHA in short version
-- **DATE-TIME**: date time with microseconds
-- **FILE**: source file name and line information
-- **MSG**: log message
+App is using [dlog](https://github.com/flow-lab/dlog) for logging. It is configured to log to stdout and stderr.
 
 ## Running locally
 

@@ -16,13 +16,15 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:12
+          image: postgres:14
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
               name: postgres
           env:
             - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
               value: postgres
 
 ---
@@ -82,11 +84,15 @@ spec:
             - name: db-sql-volume
               mountPath: /db
           env:
-            - name: DB_DISABLE_TLS
-              value: "true"
-            - name: DB_USERNAME
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASS
               value: postgres
             - name: DB_HOST
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
               value: postgres
       containers:
         - name: nginx
