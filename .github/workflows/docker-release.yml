@@ -25,6 +25,7 @@ jobs:
 
     - name: Build
       run: |
+        VERSION=${{github.ref_name}}
         docker build \
           -t $GCR/"$GKE_PROJECT"/"$IMAGE":latest \
           -t $GCR/"$GKE_PROJECT"/"$IMAGE":${VERSION} \
@@ -32,9 +33,6 @@ jobs:
           -t flowlab/"$IMAGE":"${VERSION}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg VERSION=${VERSION} .
-      with:
-        name: ${{github.ref_name}}
-        path: VERSION
 
     - name: Setup DockerHub
       run: |
