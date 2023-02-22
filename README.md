@@ -19,8 +19,8 @@ Check [minikube.yml](./minikube.yml) for example configuration.
 - [./github](./.github) - GitHub Actions workflows
 - [./certs](./certs) - certificates for TLS when running locally with docker compose
 - [./db-scripts](./db-scripts) - database scripts that will be executed on startup when using docker compose
-- [./docker-compose.yaml](./docker-compose.yaml) - docker compose file for running locally
-- [./Makefile](./Makefile) - makefile for running commands during development
+- [docker-compose.yaml](./docker-compose.yaml) - docker compose file for running locally
+- [Makefile](./Makefile) - makefile for running commands during development
 - [LICENSE](./LICENSE) - license file
 
 ## Requirements
