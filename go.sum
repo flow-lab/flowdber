@@ -11,6 +11,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/flow-lab/dlog v1.0.3 h1:jr2U+52AIPnLd0SUFH8IKd8UjG1egk+7ax+4UvqrF4U=
 github.com/flow-lab/dlog v1.0.3/go.mod h1:hR//zBzcenPPeCy2YuzqvMZWeI2DYhAtW5g/VBE2LJ0=
+github.com/flow-lab/utils v0.1.0 h1:IImfW1IhdH6xIEzEufzsg7h3t8eWEpF1jX6UFlkpChQ=
+github.com/flow-lab/utils v0.1.0/go.mod h1:RwpLPSUpm1YQnoEIz2Gu69IKXBQftbX2OM9IgMIV7zo=
 github.com/go-kit/log v0.1.0/go.mod h1:zbhenjAZHb184qTLMA9ZjW7ThYL0H2mk7Q6pNt4vbaY=
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=

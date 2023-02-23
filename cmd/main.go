@@ -6,7 +6,7 @@ import (
 	"github.com/flow-lab/dlog"
 	"github.com/flow-lab/flowdber/internal/db"
 	"github.com/flow-lab/flowdber/internal/migration"
-	"github.com/flow-lab/flowdber/internal/utils"
+	utils "github.com/flow-lab/utils"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -24,7 +24,7 @@ func main() {
 
 	logger := dlog.NewLogger(&dlog.Config{
 		AppName:      "flowdber",
-		Level:        utils.GetEnvOrDefault("LOG_LEVEL", "debug"),
+		Level:        utils.EnvOrDefault("LOG_LEVEL", "debug"),
 		Version:      version,
 		Commit:       utils.Short(commit),
 		Build:        date,
@@ -36,8 +36,15 @@ func main() {
 }
 
 func run(logger *log.Entry) error {
+	// recover panics
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Errorf("panic: %v", r)
+		}
+	}()
+
 	logger.Info("connect to db")
-	dbConn, err := db.ConnectTCPSocket(logger)
+	dbConn, err := db.ConnectTCPSocket()
 	if err != nil {
 		return err
 	}
@@ -57,7 +64,7 @@ func run(logger *log.Entry) error {
 	if err := migration.Migrate(
 		context.Background(),
 		dbConn,
-		utils.GetEnvOrDefault("DB_SQL_PATH", "/db"),
+		utils.EnvOrDefault("DB_SQL_PATH", "/db"),
 		logger,
 	); err != nil {
 		return errors.Wrap(err, "migration failed")
