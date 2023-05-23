@@ -12,11 +12,14 @@ import (
 // instance of Postgres.
 func ConnectTCPSocket() (*sql.DB, error) {
 	var (
-		dbUser    = utils.MustGetEnv("DB_USER") // e.g. 'my-db-user'
-		dbPwd     = utils.MustGetEnv("DB_PASS") // e.g. 'my-db-password'
-		dbTCPHost = utils.MustGetEnv("DB_HOST") // e.g. '127.0.0.1' ('172.17.0.1' if deployed to GAE Flex)
-		dbPort    = utils.MustGetEnv("DB_PORT") // e.g. '5432'
-		dbName    = utils.MustGetEnv("DB_NAME") // e.g. 'my-database'
+		dbUser          = utils.MustGetEnv("DB_USER") // e.g. 'my-db-user'
+		dbPwd           = utils.MustGetEnv("DB_PASS") // e.g. 'my-db-password'
+		dbTCPHost       = utils.MustGetEnv("DB_HOST") // e.g. '127.0.0.1' ('172.17.0.1' if deployed to GAE Flex)
+		dbPort          = utils.MustGetEnv("DB_PORT") // e.g. '5432'
+		dbName          = utils.MustGetEnv("DB_NAME") // e.g. 'my-database'
+		sslRootCertName = utils.EnvOrDefault("DB_SSL_ROOT_CERT_NAME", "server-ca.pem")
+		sslCertName     = utils.EnvOrDefault("DB_SSL_CERT_NAME", "server-ca.pem")
+		sslKeyName      = utils.EnvOrDefault("DB_SSL_KEY_NAME", "client-key.pem")
 	)
 
 	dbURI := fmt.Sprintf("host=%s user=%s password=%s port=%s database=%s",
@@ -29,8 +32,8 @@ func ConnectTCPSocket() (*sql.DB, error) {
 		if dbCertPath[len(dbCertPath)-1:] == "/" {
 			dbCertPath = dbCertPath[:len(dbCertPath)-1]
 		}
-		dbURI += fmt.Sprintf(" sslmode=require sslrootcert=%s/server-ca.pem sslcert=%s/client-cert.pem sslkey=%s/client-key.pem",
-			dbCertPath, dbCertPath, dbCertPath)
+		dbURI += fmt.Sprintf(" sslmode=require sslrootcert=%s/%s sslcert=%s/%s sslkey=%s/%s",
+			dbCertPath, sslRootCertName, dbCertPath, sslCertName, dbCertPath, sslKeyName)
 	}
 
 	dbPool, err := sql.Open("pgx", dbURI)
