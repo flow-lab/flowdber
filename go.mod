@@ -4,11 +4,11 @@ go 1.20
 
 require (
 	github.com/flow-lab/dlog v1.3.0
-	github.com/flow-lab/utils v1.0.1
+	github.com/flow-lab/utils v1.1.0
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.9.2
-	github.com/stretchr/testify v1.8.3
+	github.com/sirupsen/logrus v1.9.3
+	github.com/stretchr/testify v1.8.4
 )
 
 require (
@@ -22,8 +22,8 @@ require (
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/crypto v0.10.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
